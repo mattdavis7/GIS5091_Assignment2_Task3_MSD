@@ -1,0 +1,121 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+
+    <title>
+      Visualize points with a heatmap | Sample | ArcGIS Maps SDK for JavaScript
+      4.25
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.25/esri/themes/light/main.css"
+    />
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <script src="https://js.arcgis.com/4.25/"></script>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/layers/CSVLayer",
+        "esri/views/MapView",
+        "esri/widgets/Legend"
+      ], (Map, CSVLayer, MapView, Legend) => {
+        const url =
+          "https://raw.githubusercontent.com/orhuna/WebGIS_SLU_M1/main/Module%202/stl_crime_wgs_84.csv";
+
+        // Paste the url into a browser's address bar to download and view the attributes
+        // in the CSV file.
+
+        const template = {
+          title: "STL Crime",
+          content: "Crime {Crime} occurred in {District} and {Neighborhood}."
+        };
+
+        // The heatmap renderer assigns each pixel in the view with
+        // an intensity value. The ratio of that intensity value
+        // to the maxPixel intensity is used to assign a color
+        // from the continuous color ramp in the colorStops property
+
+        const renderer = {
+          type: "heatmap",
+          colorStops: [
+            { color: "rgba(0, 0, 0, 0)", ratio: 0 },
+            { color: "#32a852", ratio: 0.25 },
+            { color: "#3238a8", ratio: 0.50 },
+            { color: "#a8326b", ratio: 0.75 },
+            { color: "#ffff00", ratio: 1 }
+          ],
+          maxDensity: 0.1,
+          minDensity: 0
+        };
+
+        const layer = new CSVLayer({
+          url: url,
+          title: "Crimes in the city of St. Louis",
+          copyright: "St. Louis Crimes",
+          popupTemplate: template,
+          renderer: renderer,
+          labelsVisible: true,
+          labelingInfo: [
+            {
+              symbol: {
+                type: "text", // autocasts as new TextSymbol()
+                color: "white",
+                font: {
+                  family: "Noto Sans",
+                  size: 8
+                },
+                haloColor: "#472b77",
+                haloSize: 0.75
+              },
+              labelPlacement: "center-center",
+              labelExpressionInfo: {
+                expression: "Text($feature.mag, '#.0')"
+              },
+              where: "mag > 5"
+            }
+          ]
+        });
+
+        const map = new Map({
+          basemap: "gray-vector",
+          layers: [layer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          center: [-90.20, 38.62],
+          zoom: 12,
+          map: map
+        });
+
+        view.ui.add(
+          new Legend({
+            view: view
+          }),
+          "bottom-left"
+        );
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
