@@ -43,7 +43,7 @@
         // in the CSV file.
 
         const template = {
-          title: "STL Crime",
+          title: "Crime committed at {ILEADSStreet}",
           content: "Crime {Crime} occurred in {District} and {Neighborhood}."
         };
 
@@ -67,8 +67,10 @@
 
         const layer = new CSVLayer({
           url: url,
-          title: "Crimes in the city of St. Louis",
-          copyright: "St. Louis Crimes",
+          title: "St. Louis Crime Heatmap",
+          copyright: "St. Louis Police Department",
+              latitudeField:"Lat",
+              longitudeField:"Lon",
           popupTemplate: template,
           renderer: renderer,
           labelsVisible: true,
